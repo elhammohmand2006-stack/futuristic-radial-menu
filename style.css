@@ -1,0 +1,186 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Mona Sans", sans-serif;
+}
+
+/* تم روشن */
+main {
+    --col-height: 100vh;
+    --col-num: 1;
+    --radius: 120px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(var(--col-num), 1fr);
+
+    --scene-bg: hsl(307deg 4% 94%);
+    --knob-top: hsl(0 0% 100%);
+    --knob-bottom: hsl(0 0% 88%);
+    --outer-bg: hsl(0 0% 91%);
+    --border-bg: hsl(0 0% 96%);
+    --icon-color: hsl(0 0% 40%);
+    --accent: hsl(300 85% 60%);
+    --shadow-1: rgba(0, 0, 0, 0.2);
+    --shadow-2: rgba(255, 255, 255, 0.9);
+}
+
+@media (min-width: 500px) {
+    main {
+        --col-height: 50vh;
+    }
+}
+
+@media (min-width: 780px) {
+    main {
+        --col-num: 2;
+        --col-height: 100vh;
+    }
+}
+
+/* تم تیره */
+main [data-theme=dark] {
+    --scene-bg: hsl(207deg 20% 12%);
+    --knob-top: hsl(200 15% 14%);
+    --knob-bottom: hsl(200 15% 9%);
+    --outer-bg: hsl(200deg 19% 6%);
+    --border-bg: hsl(200deg 10% 8%);
+    --icon-color: hsl(0 0% 70%);
+    --accent: hsl(190 95% 55%);
+    --shadow-1: rgba(0, 0, 0, 0.6);
+    --shadow-2: rgba(255, 255, 255, 0.03);
+}
+
+/* هر ستون */
+.theme-box {
+    height: var(--col-height);
+    background: var(--scene-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* مجموعه اصلی */
+.selector {
+    --angle: 0deg;
+    position: relative;
+    width: calc(var(--radius) * 2);
+    height: calc(var(--radius) * 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* دکمه گرد وسط */
+.knob {
+    position: relative;
+    z-index: 2;
+    width: calc(var(--radius) * 0.85);
+    height: calc(var(--radius) * 0.85);
+    border-radius: 50%;
+    cursor: pointer;
+    background: linear-gradient(145deg, var(--knob-top), var(--knob-bottom));
+    border: 3px solid var(--border-bg);
+    box-shadow: 8px 8px 20px var(--shadow-1), -8px -8px 20px var(--shadow-2);
+    transform: rotate(var(--angle));
+    transition: transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+}
+
+/* خط کوچک روی دکمه */
+.knob::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 4px;
+    height: 16px;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: var(--accent);
+}
+
+/* دایره بیرونی (اول مخفی است) */
+.selector ul {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-radius: 50%;
+    background: var(--outer-bg);
+    box-shadow: inset 4px 4px 12px var(--shadow-1), inset -4px -4px 12px var(--shadow-2);
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+    transition: opacity 0.4s, transform 0.4s;
+}
+
+/* حالت باز */
+.selector.active ul {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.selector.active .knob {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent), 8px 8px 20px var(--shadow-1);
+}
+
+/* آیتم‌ها */
+.selector li {
+    position: absolute;
+    top: calc(50% - 20px);
+    left: calc(50% - 20px);
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    color: var(--icon-color);
+    transition: color 0.3s;
+    /* قرار دادن آیتم روی دایره */
+    transform: rotate(var(--a)) translateY(calc(var(--radius) * -0.8)) rotate(calc(var(--a) * -1));
+}
+
+.selector li:hover,
+.selector li:has(input:checked) {
+    color: var(--accent);
+}
+
+/* زاویه هر آیتم */
+.selector li:nth-child(1) { --a: -60deg; }
+.selector li:nth-child(2) { --a: 0deg; }
+.selector li:nth-child(3) { --a: 60deg; }
+.selector li:nth-child(4) { --a: 120deg; }
+.selector li:nth-child(5) { --a: 180deg; }
+.selector li:nth-child(6) { --a: 240deg; }
+
+/* رادیو نامرئی روی آیکن */
+.selector input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.selector span {
+    pointer-events: none;
+}
+
+/* چرخش دکمه به سمت گزینه انتخاب‌شده */
+.selector.active:has(li:nth-child(1) input:checked) { --angle: -60deg; }
+.selector.active:has(li:nth-child(2) input:checked) { --angle: 0deg; }
+.selector.active:has(li:nth-child(3) input:checked) { --angle: 60deg; }
+.selector.active:has(li:nth-child(4) input:checked) { --angle: 120deg; }
+.selector.active:has(li:nth-child(5) input:checked) { --angle: 180deg; }
+.selector.active:has(li:nth-child(6) input:checked) { --angle: 240deg; }
